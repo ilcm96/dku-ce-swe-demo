@@ -236,6 +236,15 @@ export default function PostDetail() {
     router.push("/");
   };
 
+  const getTotalCommentCount = (post: Post) => {
+    const mainComments = post.comments.length;
+    const replies = post.comments.reduce(
+      (sum, comment) => sum + comment.replies.length,
+      0,
+    );
+    return mainComments + replies;
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <header className="sticky top-0 z-10 bg-background border-b">
@@ -307,7 +316,9 @@ export default function PostDetail() {
         <Separator className="my-4" />
 
         <div className="p-4">
-          <h3 className="font-semibold mb-4">댓글 {post.comments.length}개</h3>
+          <h3 className="font-semibold mb-4">
+            댓글 {getTotalCommentCount(post)}개
+          </h3>
           <ScrollArea className="h-[calc(100vh-400px)]">
             <div className="space-y-4">
               {post.comments.map((comment, index) => (
