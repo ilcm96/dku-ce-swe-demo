@@ -70,7 +70,7 @@ export default function PostList() {
               <DropdownMenuItem onClick={() => router.push("/token")}>
                 토큰 관리
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => router.push("/auth/logout")}>
+              <DropdownMenuItem onClick={() => router.push("/login")}>
                 로그아웃
               </DropdownMenuItem>
             </DropdownMenuContent>
