@@ -26,7 +26,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { posts } from "@/lib/data/posts";
-import { Post, Comment } from "@/types/post";
+import { Post, Comment, Reply } from "@/types/post";
 
 const CURRENT_USER = "윤성민";
 
@@ -44,6 +44,11 @@ export default function PostDetail() {
   const [showDeleteAlert, setShowDeleteAlert] = useState(false);
   const [replyingTo, setReplyingTo] = useState<Comment | null>(null);
   const [newReply, setNewReply] = useState("");
+
+  // 수정 관련 상태 추가
+  const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
+  const [editingReplyId, setEditingReplyId] = useState<number | null>(null);
+  const [editContent, setEditContent] = useState("");
 
   useEffect(() => {
     const postId = Number(params.id);
@@ -152,6 +157,80 @@ export default function PostDetail() {
     });
   };
 
+  // 댓글 수정 시작 핸들러
+  const handleEditCommentStart = (comment: Comment) => {
+    setEditingCommentId(comment.id);
+    setEditContent(comment.content);
+    setEditingReplyId(null); // 답글 수정 중이었다면 취소
+  };
+
+  // 답글 수정 시작 핸들러
+  const handleEditReplyStart = (reply: Reply) => {
+    setEditingReplyId(reply.id);
+    setEditContent(reply.content);
+    setEditingCommentId(null); // 댓글 수정 중이었다면 취소
+  };
+
+  // 댓글 수정 제출 핸들러
+  const handleEditCommentSubmit = () => {
+    if (!editContent.trim() || !editingCommentId) return;
+
+    setPost((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        comments: prev.comments.map((comment) =>
+          comment.id === editingCommentId
+            ? {
+                ...comment,
+                content: editContent,
+              }
+            : comment,
+        ),
+      };
+    });
+
+    setEditingCommentId(null);
+    setEditContent("");
+  };
+
+  // 답글 수정 제출 핸들러
+  const handleEditReplySubmit = (commentId: number) => {
+    if (!editContent.trim() || !editingReplyId) return;
+
+    setPost((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        comments: prev.comments.map((comment) =>
+          comment.id === commentId
+            ? {
+                ...comment,
+                replies: comment.replies.map((reply) =>
+                  reply.id === editingReplyId
+                    ? {
+                        ...reply,
+                        content: editContent,
+                      }
+                    : reply,
+                ),
+              }
+            : comment,
+        ),
+      };
+    });
+
+    setEditingReplyId(null);
+    setEditContent("");
+  };
+
+  // 수정 취소 핸들러
+  const handleEditCancel = () => {
+    setEditingCommentId(null);
+    setEditingReplyId(null);
+    setEditContent("");
+  };
+
   const handleDelete = () => {
     // TODO: 삭제 로직 구현
     router.push("/");
@@ -162,8 +241,6 @@ export default function PostDetail() {
       <header className="sticky top-0 z-10 bg-background border-b">
         <div className="flex items-center justify-between p-4 max-w-4xl mx-auto w-full">
           <div className="w-20">
-            {" "}
-            {/* 왼쪽 영역 너비 고정 */}
             <Button variant="ghost" size="icon" onClick={() => router.back()}>
               <ArrowLeft className="h-5 w-5" />
             </Button>
@@ -174,8 +251,6 @@ export default function PostDetail() {
           </h1>
 
           <div className="w-20 flex justify-end">
-            {" "}
-            {/* 오른쪽 영역 너비 고정 및 우측 정렬 */}
             {isPostAuthor ? (
               <div className="flex space-x-2">
                 <Button
@@ -270,7 +345,11 @@ export default function PostDetail() {
                         )}
                         {comment.author === CURRENT_USER && (
                           <>
-                            <Button variant="ghost" size="sm">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleEditCommentStart(comment)}
+                            >
                               수정
                             </Button>
                             <Button
@@ -284,7 +363,28 @@ export default function PostDetail() {
                         )}
                       </div>
                     </div>
-                    <p className="pl-12">{comment.content}</p>
+                    {editingCommentId === comment.id ? (
+                      <div className="pl-12 space-y-2">
+                        <Textarea
+                          value={editContent}
+                          onChange={(e) => setEditContent(e.target.value)}
+                        />
+                        <div className="flex justify-end gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={handleEditCancel}
+                          >
+                            취소
+                          </Button>
+                          <Button size="sm" onClick={handleEditCommentSubmit}>
+                            수정하기
+                          </Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <p className="pl-12">{comment.content}</p>
+                    )}
 
                     {/* 답글 목록 */}
                     {comment.replies.length > 0 && (
@@ -312,7 +412,11 @@ export default function PostDetail() {
                               </div>
                               {reply.author === CURRENT_USER && (
                                 <div className="space-x-2">
-                                  <Button variant="ghost" size="sm">
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => handleEditReplyStart(reply)}
+                                  >
                                     수정
                                   </Button>
                                   <Button
@@ -327,7 +431,35 @@ export default function PostDetail() {
                                 </div>
                               )}
                             </div>
-                            <p className="pl-12">{reply.content}</p>
+                            {editingReplyId === reply.id ? (
+                              <div className="pl-12 space-y-2">
+                                <Textarea
+                                  value={editContent}
+                                  onChange={(e) =>
+                                    setEditContent(e.target.value)
+                                  }
+                                />
+                                <div className="flex justify-end gap-2">
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={handleEditCancel}
+                                  >
+                                    취소
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    onClick={() =>
+                                      handleEditReplySubmit(comment.id)
+                                    }
+                                  >
+                                    수정하기
+                                  </Button>
+                                </div>
+                              </div>
+                            ) : (
+                              <p className="pl-12">{reply.content}</p>
+                            )}
                           </div>
                         ))}
                       </div>
