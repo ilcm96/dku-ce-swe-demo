@@ -50,6 +50,10 @@ export default function MyPosts({ posts }: MyPostsProps) {
                   <p className="text-xs text-muted-foreground mt-0.5">
                     {post.createdAt}
                   </p>
+                  {/* 글 미리보기 추가 */}
+                  <p className="text-xs mt-2 text-muted-foreground line-clamp-1">
+                    {post.content}
+                  </p>
                 </div>
                 <div className="flex items-center space-x-2 text-xs text-muted-foreground shrink-0">
                   <span className="flex items-center">
