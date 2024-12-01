@@ -40,7 +40,7 @@ export default function MyPage() {
             <TabsTrigger value="info">내 정보</TabsTrigger>
             <TabsTrigger value="posts">작성한 글</TabsTrigger>
             <TabsTrigger value="comments">댓글 단 글</TabsTrigger>
-            <TabsTrigger value="likes">좋아요 글</TabsTrigger>
+            <TabsTrigger value="likes">좋아요 누른 글</TabsTrigger>
           </TabsList>
 
           <TabsContent value="info" className="mt-6">
