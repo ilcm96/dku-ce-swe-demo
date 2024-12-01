@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { Message } from "@/types/chat";
-import { USE_BACKEND } from "@/lib/constants";
+import { CHAT_API_URL } from "@/lib/constants";
 
 export default function ChatInterface() {
   const router = useRouter();
@@ -58,50 +58,41 @@ export default function ChatInterface() {
     setTokens((prev) => prev - 1);
     setInput("");
 
-    if (USE_BACKEND) {
-      try {
-        const response = await fetch("/api/chat", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ message: userMessage.content }),
-        });
+    try {
+      const response = await fetch(CHAT_API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ query: userMessage.content }),
+      });
 
-        if (!response.ok) throw new Error("Chat API failed");
+      if (!response.ok) throw new Error("Chat API failed");
 
-        const data = await response.json();
+      const data = await response.json();
+
+      if (data.success) {
         setMessages((prev) => [
           ...prev,
           {
             id: (Date.now() + 1).toString(),
-            content: data.message,
+            content: data.data.response,
             role: "assistant",
           },
         ]);
-      } catch (error) {
-        console.error("Chat error:", error);
-        setMessages((prev) => [
-          ...prev,
-          {
-            id: (Date.now() + 1).toString(),
-            content: "죄송합니다. 오류가 발생했습니다.",
-            role: "assistant",
-          },
-        ]);
+      } else {
+        throw new Error(data.message || "Failed to get response");
       }
-    } else {
-      // 데모 응답
-      setTimeout(() => {
-        setMessages((prev) => [
-          ...prev,
-          {
-            id: (Date.now() + 1).toString(),
-            content: "안녕하세요! 교환학생 관련 질문에 답변드리겠습니다.",
-            role: "assistant",
-          },
-        ]);
-      }, 1000);
+    } catch (error) {
+      console.error("Chat error:", error);
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: (Date.now() + 1).toString(),
+          content: "죄송합니다. 오류가 발생했습니다.",
+          role: "assistant",
+        },
+      ]);
     }
 
     setIsLoading(false);
