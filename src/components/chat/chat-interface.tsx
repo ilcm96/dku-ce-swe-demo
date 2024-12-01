@@ -89,7 +89,7 @@ export default function ChatInterface() {
         ...prev,
         {
           id: (Date.now() + 1).toString(),
-          content: "죄송합니다. 오류가 발생했습니다.",
+          content: "질문에 대해 알고 있는 정보가 없습니다 :(",
           role: "assistant",
         },
       ]);
