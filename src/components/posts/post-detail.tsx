@@ -308,12 +308,19 @@ export default function PostDetail() {
 
           <Separator className="my-4" />
 
-          <div className="prose dark:prose-invert max-w-none">
+          <div className="prose dark:prose-invert max-w-none mb-2">
             {post.content}
+          </div>
+
+          {/* 광고 영역 */}
+          <div className="mb-2">
+            <div className="w-full h-32 bg-muted/50 rounded-lg flex items-center justify-center">
+              <p className="text-muted-foreground">Advertisement</p>
+            </div>
           </div>
         </div>
 
-        <Separator className="my-4" />
+        <Separator />
 
         <div className="p-4">
           <h3 className="font-semibold mb-4">

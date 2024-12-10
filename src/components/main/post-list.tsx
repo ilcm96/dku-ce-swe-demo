@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from "react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -109,37 +110,50 @@ export default function PostList() {
         </div>
         <ScrollArea className="flex-1">
           <div className="divide-y">
-            {filteredPosts.map((post) => (
-              <button
-                key={post.id}
-                className="w-full text-left hover:bg-muted/50 transition-colors focus:outline-none focus:bg-muted/50"
-                onClick={() => handlePostClick(post.id)}
-              >
-                <div className="p-4">
-                  <div className="flex justify-between items-start">
-                    <div className="flex-1 min-w-0 mr-4">
-                      <h3 className="text-sm font-medium truncate">
-                        {post.title}
-                      </h3>
-                      <p className="text-xs text-muted-foreground mt-0.5 truncate">
-                        {post.author} • {post.createdAt}
-                      </p>
-                    </div>
-                    <div className="flex items-center space-x-2 text-xs text-muted-foreground shrink-0">
-                      <span className="flex items-center">
-                        <Heart
-                          className={`h-3 w-3 mr-0.5 ${post.isLiked ? "fill-current text-primary" : ""}`}
-                        />
-                        {post.likes}
-                      </span>
-                      <span className="flex items-center">
-                        <MessageSquare className="h-3 w-3 mr-0.5" />
-                        {getCommentsCount(post)}
-                      </span>
+            {filteredPosts.map((post, index) => (
+              <React.Fragment key={post.id}>
+                <button
+                  className="w-full text-left hover:bg-muted/50 transition-colors focus:outline-none focus:bg-muted/50"
+                  onClick={() => handlePostClick(post.id)}
+                >
+                  <div className="p-4">
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1 min-w-0 mr-4">
+                        <h3 className="text-sm font-medium truncate">
+                          {post.title}
+                        </h3>
+                        <p className="text-xs text-muted-foreground mt-0.5 truncate">
+                          {post.author} • {post.createdAt}
+                        </p>
+                      </div>
+                      <div className="flex items-center space-x-2 text-xs text-muted-foreground shrink-0">
+                        <span className="flex items-center">
+                          <Heart
+                            className={`h-3 w-3 mr-0.5 ${
+                              post.isLiked ? "fill-current text-primary" : ""
+                            }`}
+                          />
+                          {post.likes}
+                        </span>
+                        <span className="flex items-center">
+                          <MessageSquare className="h-3 w-3 mr-0.5" />
+                          {getCommentsCount(post)}
+                        </span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </button>
+                </button>
+
+                {/* 5개의 게시글마다 광고 삽입 */}
+                {(index + 1) % 3 === 0 &&
+                  index !== filteredPosts.length - 1 && (
+                    <div className="p-4 border-y">
+                      <div className="w-full h-12 flex items-center justify-center">
+                        <p className="text-muted-foreground">Advertisement</p>
+                      </div>
+                    </div>
+                  )}
+              </React.Fragment>
             ))}
           </div>
         </ScrollArea>
