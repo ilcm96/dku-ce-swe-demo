@@ -29,7 +29,7 @@ export default function ForgotForm() {
       setVerifiedInfo({
         ...result,
         id: "ysm", // 예시 데이터
-        tempPassword: "temp1234!", // 예시 데이터
+        tempPassword: " pdjw134!*&32", // 예시 데이터
       });
     } catch (error) {
       setError("본인인증에 실패했습니다. 다시 시도해주세요.");
