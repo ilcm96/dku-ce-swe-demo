@@ -28,7 +28,7 @@ export default function ForgotForm() {
       // 실제로는 API에서 ID와 임시 비밀번호를 함께 받아와야 함
       setVerifiedInfo({
         ...result,
-        id: "found-user-id", // 예시 데이터
+        id: "ysm", // 예시 데이터
         tempPassword: "temp1234!", // 예시 데이터
       });
     } catch (error) {
