@@ -33,7 +33,7 @@ type LoadingState = {
 export default function TokenManagement() {
   const router = useRouter();
   const { toast } = useToast();
-  const [tokens, setTokens] = useState(1000);
+  const [tokens, setTokens] = useState(10);
   const [subscriptionStatus, setSubscriptionStatus] = useState("없음");
   const [subscriptionEndDate, setSubscriptionEndDate] = useState("--/--/--");
   const [isLoading, setIsLoading] = useState<LoadingState>(null);
